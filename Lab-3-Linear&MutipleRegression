@@ -1,0 +1,178 @@
+Linear Regression
+
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("canada_per_capita_income.csv")
+     
+
+df.head()
+     
+year	per capita income (US$)
+0	1970	3399.299037
+1	1971	3768.297935
+2	1972	4251.175484
+3	1973	4804.463248
+4	1974	5576.514583
+
+df.isnull().sum()
+     
+0
+year	0
+per capita income (US$)	0
+
+dtype: int64
+
+X = df[['year']]
+y = df['per capita income (US$)']
+     
+
+from sklearn.model_selection import train_test_split
+     
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+     
+
+from sklearn.linear_model import LinearRegression
+regression = LinearRegression()
+regression.fit(X_train, y_train)
+     
+LinearRegression()
+In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook.
+On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.
+
+print(regression.coef_)
+print(regression.intercept_)
+     
+[822.5431161]
+-1620384.4226165772
+
+print(regression.predict([[2020]]))
+     
+[41152.67190776]
+/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
+Salary Dataset
+
+
+df = pd.read_csv("salary.csv")
+     
+
+df.head()
+     
+YearsExperience	Salary
+0	1.1	39343
+1	1.3	46205
+2	1.5	37731
+3	2.0	43525
+4	2.2	39891
+
+df['Salary'] = df['Salary'].fillna(df['Salary'].mean())
+df['YearsExperience'] = df['YearsExperience'].fillna(df['YearsExperience'].mean())
+     
+
+X = df[['YearsExperience']]
+y = df['Salary']
+     
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+     
+
+from sklearn.linear_model import LinearRegression
+regression = LinearRegression()
+regression.fit(X_train, y_train)
+     
+LinearRegression()
+In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook.
+On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.
+
+print("Slope (coefficient):", regression.coef_[0])
+print("Intercept:", regression.intercept_)
+print("Predicted salary", regression.predict([[12]]))
+     
+Slope (coefficient): 9399.730494690995
+Intercept: 26884.67020250896
+Predicted salary [139681.4361388]
+/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
+Multiple Regression
+Hiring Dataset
+
+
+df = pd.read_csv("hiring.csv")
+
+df['experience'] = df['experience'].replace({
+    'zero': 0,
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+    'ten': 10
+})
+
+     
+
+df['experience'] = pd.to_numeric(df['experience'], errors='coerce')
+df['experience'] = df['experience'].fillna(df['experience'].median())
+df['test_score(out of 10)'] = df['test_score(out of 10)'].fillna(df['test_score(out of 10)'].mean())
+     
+
+X = df[['experience', 'test_score(out of 10)', 'interview_score(out of 10)']]
+y = df['salary($)']
+     
+
+model = LinearRegression()
+model.fit(X, y)
+     
+LinearRegression()
+In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook.
+On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.
+
+salary1 = model.predict([[2, 9, 6]])
+salary2 = model.predict([[12, 10, 10]])
+
+print("Predicted salary for (2 yr exp, 9 test, 6 interview):", salary1[0])
+print("Predicted salary for (12 yr exp, 10 test, 10 interview):", salary2[0])
+     
+Predicted salary for (2 yr exp, 9 test, 6 interview): 49140.22031788389
+Predicted salary for (12 yr exp, 10 test, 10 interview): 86860.01354281182
+/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
+/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
+Company Dataset
+
+
+df = pd.read_csv("1000_Companies.csv")
+
+     
+
+df = pd.get_dummies(df, columns=['State'], drop_first=True)
+     
+
+X = df.drop('Profit', axis=1)
+y = df['Profit']
+
+regression = LinearRegression()
+regression.fit(X, y)
+
+print("Coefficients:", regression.coef_)
+print("Intercept:", regression.intercept_)
+     
+Coefficients: [ 5.53149346e-01  1.02624663e+00  8.10861610e-02 -4.46353536e+02
+  9.77276094e+01]
+Intercept: -70051.24950374496
+
+prediction = regression.predict([[91694.48, 515841.3, 11931.24, 1, 0]])
+
+print("Predicted Profit:", prediction[0])
+     
+Predicted Profit: 510570.9926108309
+/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py:2739: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
