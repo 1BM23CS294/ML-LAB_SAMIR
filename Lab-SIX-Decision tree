@@ -1,0 +1,149 @@
+
+Iris Dataset
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.metrics import accuracy_score, confusion_matrix, mean_absolute_error, mean_squared_error
+import numpy as np
+
+
+data = pd.read_csv("iris.csv")
+le = LabelEncoder()
+data['species'] = le.fit_transform(data['species'])
+
+X = data.drop('species', axis=1)
+y = data['species']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy Score:", accuracy)
+
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:")
+print(cm)
+     
+Accuracy Score: 1.0
+Confusion Matrix:
+[[10  0  0]
+ [ 0  9  0]
+ [ 0  0 11]]
+Petrol Consumption
+
+data = pd.read_csv("petrol_consumption.csv")
+
+X = data.drop('Petrol_Consumption', axis=1)
+y = data['Petrol_Consumption']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = DecisionTreeRegressor()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print("Mean Absolute Error:", mae)
+print("Mean Squared Error:", mse)
+print("Root Mean Squared Error:", rmse)
+     
+Mean Absolute Error: 90.0
+Mean Squared Error: 16825.2
+Root Mean Squared Error: 129.71198865178192
+Drug
+
+data = pd.read_csv("drug.csv")
+
+print(data.head())
+
+le_sex = LabelEncoder()
+le_bp = LabelEncoder()
+le_chol = LabelEncoder()
+le_drug = LabelEncoder()
+
+data['Sex'] = le_sex.fit_transform(data['Sex'])
+data['BP'] = le_bp.fit_transform(data['BP'])
+data['Cholesterol'] = le_chol.fit_transform(data['Cholesterol'])
+data['Drug'] = le_drug.fit_transform(data['Drug'])
+
+X = data.drop('Drug', axis=1)
+y = data['Drug']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy Score:", accuracy)
+
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:")
+print(cm)
+     
+   Age Sex      BP Cholesterol  Na_to_K   Drug
+0   23   F    HIGH        HIGH   25.355  drugY
+1   47   M     LOW        HIGH   13.093  drugC
+2   47   M     LOW        HIGH   10.114  drugC
+3   28   F  NORMAL        HIGH    7.798  drugX
+4   61   F     LOW        HIGH   18.043  drugY
+Accuracy Score: 1.0
+Confusion Matrix:
+[[ 6  0  0  0  0]
+ [ 0  3  0  0  0]
+ [ 0  0  5  0  0]
+ [ 0  0  0 11  0]
+ [ 0  0  0  0 15]]
+
+import pandas as pd
+
+import numpy as np
+
+data = pd.read_csv("petrol_consumption.csv")
+
+X = data.iloc[:,:-1].values
+
+y = data.iloc[:,-1].values
+
+
+train_size = int(0.8*len(y))
+
+X_train = X[:train_size]
+
+y_train = y[:train_size]
+
+X_test = X[train_size:]
+
+y_test = y[train_size:]
+
+prediction = np.mean(y_train)
+
+pred = [prediction]*len(y_test)
+
+mae = np.mean(abs(y_test - pred))
+
+mse = np.mean((y_test - pred)**2)
+
+rmse = np.sqrt(mse)
+
+print("MAE:",mae)
+
+print("MSE:",mse)
+
+print("RMSE:",rmse)
+     
+MAE: 114.60526315789475
+MSE: 26343.830193905822
+RMSE: 162.30782542411757
