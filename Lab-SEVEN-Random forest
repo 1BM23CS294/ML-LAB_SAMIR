@@ -1,0 +1,66 @@
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+
+df = pd.read_csv("iris.csv")
+
+X = df.drop("species", axis=1)
+y = df["species"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+rf_default = RandomForestClassifier(n_estimators=10, random_state=42)
+rf_default.fit(X_train, y_train)
+
+y_pred_default = rf_default.predict(X_test)
+
+acc_default = accuracy_score(y_test, y_pred_default)
+print("Default Accuracy (10 trees):", acc_default)
+
+
+best_score = 0
+best_n = 0
+best_model = None
+
+for n in [10, 20, 50, 100, 150, 200]:
+    rf = RandomForestClassifier(n_estimators=n, random_state=42)
+    rf.fit(X_train, y_train)
+
+    y_pred = rf.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+
+    print(f"Trees: {n}, Accuracy: {acc}")
+
+    if acc > best_score:
+        best_score = acc
+        best_n = n
+        best_model = rf
+
+y_best_pred = best_model.predict(X_test)
+
+print("\nBest Number of Trees:", best_n)
+print("Best Accuracy:", best_score)
+
+cm = confusion_matrix(y_test, y_best_pred)
+print("\nConfusion Matrix:\n", cm)
+     
+Default Accuracy (10 trees): 1.0
+Trees: 10, Accuracy: 1.0
+Trees: 20, Accuracy: 1.0
+Trees: 50, Accuracy: 1.0
+Trees: 100, Accuracy: 1.0
+Trees: 150, Accuracy: 1.0
+Trees: 200, Accuracy: 1.0
+
+Best Number of Trees: 10
+Best Accuracy: 1.0
+
+Confusion Matrix:
+ [[10  0  0]
+ [ 0  9  0]
+ [ 0  0 11]]
