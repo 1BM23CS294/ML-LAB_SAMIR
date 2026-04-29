@@ -1,0 +1,58 @@
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import accuracy_score
+
+df = pd.read_csv("income.csv")
+
+X = df.drop("income_level", axis=1)
+y = df["income_level"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+best_score = 0
+best_n = 0
+
+print("\nEstimator vs Accuracy:")
+for n in range(5, 101, 5):
+    model = AdaBoostClassifier(n_estimators=n, random_state=42)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    score = accuracy_score(y_test, y_pred)
+
+    if score > best_score:
+        best_score = score
+        best_n = n
+
+    print(f"{n} estimators -> Accuracy: {score:.4f}")
+
+print("\nBest Accuracy:", best_score)
+print("Best number of estimators:", best_n)
+     
+Estimator vs Accuracy:
+5 estimators -> Accuracy: 0.8100
+10 estimators -> Accuracy: 0.8182
+15 estimators -> Accuracy: 0.8292
+20 estimators -> Accuracy: 0.8244
+25 estimators -> Accuracy: 0.8297
+30 estimators -> Accuracy: 0.8310
+35 estimators -> Accuracy: 0.8310
+40 estimators -> Accuracy: 0.8314
+45 estimators -> Accuracy: 0.8323
+50 estimators -> Accuracy: 0.8327
+55 estimators -> Accuracy: 0.8329
+60 estimators -> Accuracy: 0.8328
+65 estimators -> Accuracy: 0.8337
+70 estimators -> Accuracy: 0.8334
+75 estimators -> Accuracy: 0.8335
+80 estimators -> Accuracy: 0.8335
+85 estimators -> Accuracy: 0.8325
+90 estimators -> Accuracy: 0.8329
+95 estimators -> Accuracy: 0.8329
+100 estimators -> Accuracy: 0.8328
+
+Best Accuracy: 0.8336574879721568
+Best number of estimators: 65
