@@ -1,0 +1,94 @@
+
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.decomposition import PCA
+from sklearn.metrics import accuracy_score
+
+
+df = pd.read_csv("heart.csv")
+
+X = df.drop("HeartDisease", axis=1)
+y = df["HeartDisease"]
+
+categorical_cols = X.select_dtypes(include=['object']).columns
+numeric_cols = X.select_dtypes(exclude=['object']).columns
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", StandardScaler(), numeric_cols),
+        ("cat", OneHotEncoder(drop='first'), categorical_cols)
+    ]
+)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+models = {
+    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "SVM": SVC(),
+    "Random Forest": RandomForestClassifier()
+}
+
+print("=== Accuracy WITHOUT PCA ===")
+
+best_model = None
+best_accuracy = 0
+
+for name, model in models.items():
+    pipeline = Pipeline([
+        ("preprocessing", preprocessor),
+        ("model", model)
+    ])
+
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+
+    acc = accuracy_score(y_test, y_pred)
+    print(f"{name}: {acc:.4f}")
+
+    if acc > best_accuracy:
+        best_accuracy = acc
+        best_model = name
+
+print(f"\nBest Model (without PCA): {best_model} ({best_accuracy:.4f})")
+
+
+pca_pipeline = Pipeline([
+    ("preprocessing", preprocessor),
+    ("pca", PCA(n_components=5)),
+    ("model", RandomForestClassifier())
+])
+
+pca_pipeline.fit(X_train, y_train)
+y_pred_pca = pca_pipeline.predict(X_test)
+
+pca_accuracy = accuracy_score(y_test, y_pred_pca)
+
+print("\n=== Accuracy WITH PCA ===")
+print(f"{best_model} with PCA: {pca_accuracy:.4f}")
+
+print("\n=== Final Comparison ===")
+print(f"Accuracy before PCA: {best_accuracy:.4f}")
+print(f"Accuracy after PCA : {pca_accuracy:.4f}")
+     
+=== Accuracy WITHOUT PCA ===
+Logistic Regression: 0.8533
+SVM: 0.8587
+Random Forest: 0.8641
+
+Best Model (without PCA): Random Forest (0.8641)
+
+=== Accuracy WITH PCA ===
+Random Forest with PCA: 0.7935
+
+=== Final Comparison ===
+Accuracy before PCA: 0.8641
+Accuracy after PCA : 0.7935
